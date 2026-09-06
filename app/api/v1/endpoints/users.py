@@ -1,63 +1,42 @@
-from fastapi import APIRouter, Depends
+from sqlalchemy import Boolean, ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column
 
-from app.api.deps import require_roles, require_self_or_roles
-from app.models.user import User
-
-
-router = APIRouter(
-    prefix="/users",
-    tags=["Users"],
-)
+from app.db.base import Base
 
 
-@router.get("/candidate-only")
-def candidate_only(
-    current_user: User = Depends(
-        require_roles("candidate")
-    ),
-):
-    return {
-        "message": "Candidate access granted",
-        "user_id": current_user.id,
-        "role": current_user.role,
-    }
+class User(Base):
+    __tablename__ = "users"
 
+    id: Mapped[int] = mapped_column(
+        primary_key=True
+    )
 
-@router.get("/recruiter-only")
-def recruiter_only(
-    current_user: User = Depends(
-        require_roles("recruiter")
-    ),
-):
-    return {
-        "message": "Recruiter access granted",
-        "user_id": current_user.id,
-        "role": current_user.role,
-    }
+    name: Mapped[str] = mapped_column(
+        String(100)
+    )
 
+    email: Mapped[str] = mapped_column(
+        String(255),
+        unique=True,
+        index=True
+    )
 
-@router.get("/interviewer-only")
-def interviewer_only(
-    current_user: User = Depends(
-        require_roles("interviewer")
-    ),
-):
-    return {
-        "message": "Interviewer access granted",
-        "user_id": current_user.id,
-        "role": current_user.role,
-    }
+    password_hash: Mapped[str] = mapped_column(
+        String(255)
+    )
 
-@router.get("/profile/{user_id}")
-def get_profile(
-    user_id: int,
-    current_user: User = Depends(
-        require_self_or_roles("recruiter")
-    ),
-):
-    return {
-        "message": "Profile access granted",
-        "requested_user_id": user_id,
-        "current_user_id": current_user.id,
-        "current_user_role": current_user.role,
-    }
+    role: Mapped[str] = mapped_column(
+        String(50),
+        default="candidate"
+    )
+
+    company_id: Mapped[int | None] = mapped_column(
+        ForeignKey("companies.id"),
+        nullable=True,
+        index=True
+    )
+
+    is_active: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True
+    )

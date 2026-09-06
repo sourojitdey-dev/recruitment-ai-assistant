@@ -5,11 +5,24 @@ class UserRegister(BaseModel):
     name: str
     email: EmailStr
     password: str
+    favorite_book: str
+    favorite_person: str
 
-
-class UserLogin(BaseModel):
+class ForgotPasswordRequest(BaseModel):
     email: EmailStr
-    password: str
+    favorite_book: str
+    favorite_person: str
+    new_password: str
+
+
+class RecruiterRegister(UserRegister):
+    company_name: str
+    recruiter_code: str
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
 
 
 class UserResponse(BaseModel):
@@ -22,8 +35,3 @@ class UserResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
-
-
-class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str
