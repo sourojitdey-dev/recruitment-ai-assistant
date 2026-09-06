@@ -3,3 +3,9 @@ from app.models.job import Job
 from app.models.company import Company
 from app.models.candidate import Candidate
 from app.models.resume import Resume
+from app.models.application import Application
+from app.models.interview import Interview
+from app.models.knowledge_document import KnowledgeDocument
+from app.models.knowledge_chunk import KnowledgeChunk
+from app.models.chat_session import ChatSession
+from app.models.chat_message import ChatMessage

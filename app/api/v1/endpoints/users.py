@@ -1,42 +1,27 @@
-from sqlalchemy import Boolean, ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
 
-from app.db.base import Base
+from app.api.deps import get_current_user, get_db, require_roles
+from app.models.user import User
+from app.schemas.auth import UserResponse
+
+router = APIRouter(
+    prefix="/users",
+    tags=["Users"],
+)
 
 
-class User(Base):
-    __tablename__ = "users"
+@router.get("/me", response_model=UserResponse)
+def get_user_profile(
+    current_user: User = Depends(get_current_user),
+):
+    return current_user
 
-    id: Mapped[int] = mapped_column(
-        primary_key=True
-    )
 
-    name: Mapped[str] = mapped_column(
-        String(100)
-    )
-
-    email: Mapped[str] = mapped_column(
-        String(255),
-        unique=True,
-        index=True
-    )
-
-    password_hash: Mapped[str] = mapped_column(
-        String(255)
-    )
-
-    role: Mapped[str] = mapped_column(
-        String(50),
-        default="candidate"
-    )
-
-    company_id: Mapped[int | None] = mapped_column(
-        ForeignKey("companies.id"),
-        nullable=True,
-        index=True
-    )
-
-    is_active: Mapped[bool] = mapped_column(
-        Boolean,
-        default=True
-    )
+@router.get("/", response_model=list[UserResponse])
+def list_users(
+    current_user: User = Depends(require_roles("admin")),
+    db: Session = Depends(get_db),
+):
+    users = db.query(User).order_by(User.id.asc()).all()
+    return users

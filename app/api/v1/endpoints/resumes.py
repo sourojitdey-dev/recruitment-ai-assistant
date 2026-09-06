@@ -101,6 +101,13 @@ def upload_resume(
     db.commit()
     db.refresh(new_resume)
 
+    # Auto-index resume for AI Matching and RAG
+    try:
+        from app.services.vector_store import index_resume
+        index_resume(db, new_resume, candidate)
+    except Exception:
+        pass
+
     return new_resume
 
 

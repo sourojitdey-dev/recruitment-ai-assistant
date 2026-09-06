@@ -7,6 +7,13 @@ class JobCreate(BaseModel):
     location: str
 
 
+class JobUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    location: str | None = None
+    is_active: bool | None = None
+
+
 class JobResponse(BaseModel):
     id: int
     title: str

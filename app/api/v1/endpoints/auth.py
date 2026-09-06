@@ -1,3 +1,4 @@
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import func
@@ -13,6 +14,7 @@ from app.models.company import Company
 from app.models.user import User
 from app.schemas.auth import (
     ForgotPasswordRequest,
+    InterviewerRegister,
     RecruiterRegister,
     TokenResponse,
     UserRegister,
@@ -139,6 +141,68 @@ def register_recruiter(
 
 
 @router.post(
+    "/register/interviewer",
+    response_model=UserResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def register_interviewer(
+    user_data: InterviewerRegister,
+    db: Session = Depends(get_db),
+):
+    existing_user = (
+        db.query(User)
+        .filter(User.email == user_data.email)
+        .first()
+    )
+
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered",
+        )
+
+    company = (
+        db.query(Company)
+        .filter(
+            func.lower(Company.name)
+            == user_data.company_name.strip().lower(),
+            Company.is_active.is_(True),
+        )
+        .first()
+    )
+
+    if company is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Company not found",
+        )
+
+    if not verify_company_code(
+        user_data.recruiter_code,
+        company.recruiter_code_hash,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid company recruiter code",
+        )
+
+    new_user = User(
+        name=user_data.name,
+        email=user_data.email,
+        password_hash=hash_password(user_data.password),
+        role="interviewer",
+        company_id=company.id,
+        is_active=True,
+    )
+
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return new_user
+
+
+@router.post(
     "/login",
     response_model=TokenResponse,
 )
@@ -252,3 +316,4 @@ def get_me(
     current_user: User = Depends(get_current_user),
 ):
     return current_user
+

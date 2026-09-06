@@ -1,5 +1,34 @@
+# Python virtual environments & caches
 .venv/
-.env
+venv/
+env/
 __pycache__/
 *.pyc
-storage/resumes/
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment and secrets
+.env
+
+# Storage
+storage/resumes/*
+!storage/resumes/.gitkeep
+storage/documents/*
+!storage/documents/.gitkeep
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+dist/
+.vite/
+frontend/.vite/
+
+# IDE / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -35,3 +35,9 @@ class UserResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
+class InterviewerRegister(BaseModel):
+    name: str
+    email: EmailStr
+    password: str
+    company_name: str
+    recruiter_code: str
