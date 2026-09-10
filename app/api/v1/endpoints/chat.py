@@ -19,16 +19,20 @@ router = APIRouter(
 )
 
 
+from starlette.concurrency import run_in_threadpool
+
+
 @router.post(
     "/",
     response_model=ChatResponse,
 )
-def send_chat_message(
+async def send_chat_message(
     chat_request: ChatRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    result = answer_user_query(
+    result = await run_in_threadpool(
+        answer_user_query,
         db=db,
         current_user=current_user,
         message=chat_request.message,
@@ -134,7 +138,7 @@ def get_chat_session(
 
 @router.delete(
     "/sessions/{session_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_200_OK,
 )
 def delete_chat_session(
     session_id: str,
@@ -152,9 +156,12 @@ def delete_chat_session(
             detail="Chat session not found",
         )
 
+    # Delete all associated chat messages first
+    db.query(ChatMessage).filter(ChatMessage.session_id == session.id).delete()
     db.delete(session)
     db.commit()
-    return None
+    return {"success": True, "message": "Chat session deleted successfully"}
+
 
 
 @router.get(

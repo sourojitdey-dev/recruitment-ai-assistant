@@ -7,12 +7,32 @@ def test_register_candidate(client):
             "password": "Password@123",
             "favorite_book": "Clean Architecture",
             "favorite_person": "Grace Hopper",
+            "phone": "+91 9876543210",
+            "location": "Kolkata, India",
+            "bio": "Python Backend Developer",
         },
     )
     assert res.status_code == 201
     data = res.json()
     assert data["email"] == "john@example.com"
     assert data["role"] == "candidate"
+
+    # Verify auto-created candidate profile
+    login_res = client.post(
+        "/api/v1/auth/login",
+        data={"username": "john@example.com", "password": "Password@123"},
+    )
+    token = login_res.json()["access_token"]
+
+    cand_res = client.get(
+        "/api/v1/candidates/me",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert cand_res.status_code == 200
+    cand_data = cand_res.json()
+    assert cand_data["phone"] == "+91 9876543210"
+    assert cand_data["location"] == "Kolkata, India"
+    assert cand_data["bio"] == "Python Backend Developer"
 
 
 def test_register_duplicate_email(client, candidate_user):

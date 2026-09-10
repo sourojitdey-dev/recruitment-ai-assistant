@@ -33,6 +33,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def add_no_cache_headers(request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith("/static") or request.url.path in ("/", "/chat"):
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
+
+
 # Mount Static Files
 static_dir = Path("app/static")
 if static_dir.exists():
@@ -63,14 +74,20 @@ async def websocket_chat_endpoint(
 
 @app.get("/chat", response_class=HTMLResponse)
 def serve_chat_page():
+    index_file = Path("app/static/index.html")
+    if index_file.exists():
+        return FileResponse(index_file)
     chat_file = Path("app/static/chat.html")
     if chat_file.exists():
         return FileResponse(chat_file)
     return HTMLResponse("<h2>Chat interface static page not found.</h2>")
 
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 def root():
+    index_file = Path("app/static/index.html")
+    if index_file.exists():
+        return FileResponse(index_file)
     return {
         "message": "AI-Powered Recruitment, Resume and Career Assistant",
         "docs": "/docs",

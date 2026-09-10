@@ -6,7 +6,7 @@ from app.llm.base import BaseLLMProvider
 
 
 class GroqProvider(BaseLLMProvider):
-    def __init__(self, api_key: str | None = None, model: str = "llama-3.3-70b-versatile"):
+    def __init__(self, api_key: str | None = None, model: str = "qwen/qwen3.8-27b"):
         self.api_key = api_key or settings.GROQ_API_KEY
         self.model = model
         self.client = Groq(api_key=self.api_key) if self.api_key else None
@@ -15,7 +15,7 @@ class GroqProvider(BaseLLMProvider):
         if not self.client:
             raise ValueError("Groq API key is not configured.")
 
-        models_to_try = [self.model, "llama-3.1-8b-instant", "mixtral-8x7b-32768"]
+        models_to_try = [self.model, "qwen/qwen3.8-27b", "groq/compound-mini", "openai/gpt-oss-120b", "qwen/qwen3.6-27b"]
         last_err = None
 
         for m in models_to_try:
@@ -24,7 +24,7 @@ class GroqProvider(BaseLLMProvider):
                     model=m,
                     messages=messages,
                     temperature=0.2,
-                    max_tokens=1024,
+                    max_tokens=2048,
                 )
                 return response.choices[0].message.content or ""
             except Exception as e:
@@ -41,7 +41,7 @@ class GroqProvider(BaseLLMProvider):
             model=self.model,
             messages=messages,
             temperature=0.2,
-            max_tokens=1024,
+            max_tokens=2048,
             stream=True,
         )
         for chunk in response:

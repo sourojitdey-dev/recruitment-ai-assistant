@@ -47,10 +47,10 @@ def upload_resume(
     )
 
     if candidate is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Candidate profile not found",
-        )
+        candidate = Candidate(user_id=current_user.id)
+        db.add(candidate)
+        db.commit()
+        db.refresh(candidate)
 
     RESUME_STORAGE_DIR.mkdir(
         parents=True,
@@ -128,10 +128,10 @@ def list_my_resumes(
     )
 
     if candidate is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Candidate profile not found",
-        )
+        candidate = Candidate(user_id=current_user.id)
+        db.add(candidate)
+        db.commit()
+        db.refresh(candidate)
 
     resumes = (
         db.query(Resume)

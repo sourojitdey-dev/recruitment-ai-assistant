@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import { GlassCard } from '../components/GlassCard';
 import { GlassButton } from '../components/GlassButton';
 import { User, Mail, Lock, Building2, KeyRound, AlertCircle, UserCheck } from 'lucide-react';
@@ -16,6 +17,7 @@ export const RegisterInterviewerPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -28,7 +30,8 @@ export const RegisterInterviewerPage = () => {
 
     try {
       await api.post('/auth/register/interviewer', formData);
-      navigate('/login?registered=interviewer');
+      await login(formData.email, formData.password);
+      navigate('/interviewer');
     } catch (err) {
       setError(err.response?.data?.detail || 'Interviewer registration failed.');
     } finally {

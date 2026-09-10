@@ -71,10 +71,10 @@ def get_my_candidate_profile(
     )
 
     if candidate is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Candidate profile not found",
-        )
+        candidate = Candidate(user_id=current_user.id)
+        db.add(candidate)
+        db.commit()
+        db.refresh(candidate)
 
     return candidate
 
@@ -97,10 +97,10 @@ def update_my_candidate_profile(
     )
 
     if candidate is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Candidate profile not found",
-        )
+        candidate = Candidate(user_id=current_user.id)
+        db.add(candidate)
+        db.commit()
+        db.refresh(candidate)
 
     candidate.phone = candidate_data.phone
     candidate.location = candidate_data.location

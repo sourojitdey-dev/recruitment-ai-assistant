@@ -10,6 +10,7 @@ from app.core.security import (
     hash_password,
     verify_password,
 )
+from app.models.candidate import Candidate
 from app.models.company import Company
 from app.models.user import User
 from app.schemas.auth import (
@@ -66,6 +67,15 @@ def register(
     )
 
     db.add(new_user)
+    db.flush()
+
+    candidate = Candidate(
+        user_id=new_user.id,
+        phone=user_data.phone,
+        location=user_data.location,
+        bio=user_data.bio,
+    )
+    db.add(candidate)
     db.commit()
     db.refresh(new_user)
 

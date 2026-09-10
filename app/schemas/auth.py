@@ -7,6 +7,9 @@ class UserRegister(BaseModel):
     password: str
     favorite_book: str
     favorite_person: str
+    phone: str | None = None
+    location: str | None = None
+    bio: str | None = None
 
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr

@@ -2,6 +2,7 @@ import json
 import jwt
 from fastapi import WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
+from starlette.concurrency import run_in_threadpool
 
 from app.core.config import settings
 from app.db.session import SessionLocal
@@ -91,8 +92,9 @@ async def handle_chat_websocket(websocket: WebSocket, token: str | None = None):
                 websocket,
             )
 
-            # Generate response
-            response = answer_user_query(
+            # Generate response asynchronously in threadpool to keep event loop free
+            response = await run_in_threadpool(
+                answer_user_query,
                 db=db,
                 current_user=effective_user,
                 message=user_text,
