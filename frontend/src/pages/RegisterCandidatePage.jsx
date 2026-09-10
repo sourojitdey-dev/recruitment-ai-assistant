@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import { GlassCard } from '../components/GlassCard';
 import { GlassButton } from '../components/GlassButton';
-import { User, Mail, Lock, BookOpen, Heart, AlertCircle, Sparkles } from 'lucide-react';
+import { User, Mail, Lock, BookOpen, Heart, AlertCircle, Phone, MapPin, Sparkles, FileText } from 'lucide-react';
 
 export const RegisterCandidatePage = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
+    location: '',
+    bio: '',
     password: '',
     favorite_book: '',
     favorite_person: '',
@@ -16,6 +20,7 @@ export const RegisterCandidatePage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -28,7 +33,8 @@ export const RegisterCandidatePage = () => {
 
     try {
       await api.post('/auth/register', formData);
-      navigate('/login?registered=candidate');
+      await login(formData.email, formData.password);
+      navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.detail || 'Registration failed. Please check your information.');
     } finally {
@@ -55,40 +61,94 @@ export const RegisterCandidatePage = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Full Name</label>
-            <div className="relative">
-              <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
-              <input
-                type="text"
-                name="name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="e.g. Sagnik Saha"
-                className="w-full glass-input rounded-xl py-2.5 pl-10 pr-4 text-sm"
-              />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Full Name *</label>
+              <div className="relative">
+                <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="e.g. Sagnik Saha"
+                  className="w-full glass-input rounded-xl py-2.5 pl-10 pr-4 text-sm"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Email Address *</label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="name@example.com"
+                  className="w-full glass-input rounded-xl py-2.5 pl-10 pr-4 text-sm"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-indigo-950/30 border border-indigo-500/20 space-y-3">
+            <div className="text-xs font-semibold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5" /> Profile Details (For Match Score & Resumes)
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-slate-300 mb-1">Phone Number *</label>
+                <div className="relative">
+                  <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <input
+                    type="tel"
+                    name="phone"
+                    required
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="+91 9876543210"
+                    className="w-full glass-input rounded-xl py-2 pl-10 pr-4 text-sm"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs text-slate-300 mb-1">Location / City *</label>
+                <div className="relative">
+                  <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <input
+                    type="text"
+                    name="location"
+                    required
+                    value={formData.location}
+                    onChange={handleChange}
+                    placeholder="e.g. Kolkata, India / Remote"
+                    className="w-full glass-input rounded-xl py-2 pl-10 pr-4 text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs text-slate-300 mb-1">Professional Bio / Headline</label>
+              <div className="relative">
+                <FileText className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                <input
+                  type="text"
+                  name="bio"
+                  value={formData.bio}
+                  onChange={handleChange}
+                  placeholder="e.g. Full Stack Python & AI Developer"
+                  className="w-full glass-input rounded-xl py-2 pl-10 pr-4 text-sm"
+                />
+              </div>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Email Address</label>
-            <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
-              <input
-                type="email"
-                name="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="name@example.com"
-                className="w-full glass-input rounded-xl py-2.5 pl-10 pr-4 text-sm"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Password</label>
+            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Password *</label>
             <div className="relative">
               <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
               <input

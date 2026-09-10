@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import { GlassCard } from '../components/GlassCard';
 import { GlassButton } from '../components/GlassButton';
 import { User, Mail, Lock, Building2, KeyRound, BookOpen, Heart, AlertCircle, Briefcase } from 'lucide-react';
@@ -18,6 +19,7 @@ export const RegisterRecruiterPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -30,7 +32,8 @@ export const RegisterRecruiterPage = () => {
 
     try {
       await api.post('/auth/register/recruiter', formData);
-      navigate('/login?registered=recruiter');
+      await login(formData.email, formData.password);
+      navigate('/recruiter');
     } catch (err) {
       setError(err.response?.data?.detail || 'Recruiter registration failed. Check company name or code.');
     } finally {

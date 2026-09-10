@@ -311,20 +311,36 @@ export const AICareerAssistantPage = () => {
                     </div>
 
                     {/* Sources Box if Present */}
-                    {!isUser && m.sources && m.sources.length > 0 && (
-                      <div className="p-3 rounded-xl bg-purple-950/30 border border-purple-500/20 text-xs text-slate-400 space-y-1">
-                        <div className="font-semibold text-purple-300 flex items-center gap-1">
-                          <BookOpen className="w-3.5 h-3.5" /> Verified Sources:
+                    {!isUser && m.sources && m.sources.length > 0 && (() => {
+                      const seen = new Set();
+                      const unique = [];
+                      for (const s of m.sources) {
+                        const key = `${s.title}_${s.source_type}`;
+                        if (!seen.has(key)) {
+                          seen.add(key);
+                          unique.push(s);
+                        }
+                      }
+                      if (unique.length === 0) return null;
+                      return (
+                        <div className="p-3 rounded-xl bg-purple-950/30 border border-purple-500/20 text-xs text-slate-400 space-y-1.5">
+                          <div className="font-semibold text-purple-300 flex items-center gap-1 text-[11px] uppercase tracking-wider">
+                            <BookOpen className="w-3.5 h-3.5" /> Grounded Sources:
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {unique.map((s, idx) => (
+                              <span
+                                key={idx}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-600/15 border border-indigo-500/30 text-[11px] text-slate-200"
+                              >
+                                <span className="font-medium text-white">{s.title || 'Document'}</span>
+                                <span className="text-slate-400 capitalize">({s.source_type})</span>
+                              </span>
+                            ))}
+                          </div>
                         </div>
-                        <ul className="list-disc list-inside space-y-0.5 text-[11px] text-slate-300">
-                          {m.sources.map((s, idx) => (
-                            <li key={idx}>
-                              <span className="font-medium text-slate-200">{s.title || 'Document'}</span> ({s.source_type})
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                      );
+                    })()}
                   </div>
                 </div>
               );

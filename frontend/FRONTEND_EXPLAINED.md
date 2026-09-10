@@ -1,70 +1,67 @@
-# 🚀 Frontend Architecture & Viva Guide (For Beginners)
+# 🚀 Pure HTML, CSS & JavaScript Frontend Architecture & Viva Guide
 
-This guide explains the entire frontend structure in simple terms so you can understand and explain it during your viva or presentation within 10 minutes!
-
----
-
-## 1. 🏗️ How the Frontend is Built
-
-The frontend is built using **React 18** with **Vite** (for fast building) and **Tailwind CSS** (for styling).
-
-It follows 3 simple layers:
-1. **API Client (`src/api/client.js`)**: An Axios instance that automatically adds your JWT token (`Authorization: Bearer <token>`) to every request sent to the FastAPI backend at `/api/v1`.
-2. **Auth Context (`src/context/AuthContext.jsx`)**: A single React Context that remembers who is currently logged in, their role (`candidate`, `recruiter`, `interviewer`, or `admin`), and provides `login()` and `logout()`.
-3. **Pages (`src/pages/`) & Components (`src/components/`)**: Clean screens and building blocks.
+This guide explains the entire recreated frontend built with **Vanilla HTML5, CSS3, and ES6+ JavaScript** without any React, Vite, or npm build dependencies!
 
 ---
 
-## 2. 🧩 The 6 Core Reusable Components
+## 1. 🏗️ How the Pure HTML/CSS/JS Frontend is Structured
 
-| Component | File | What it Does |
-| :--- | :--- | :--- |
-| **Navbar** | `src/components/Navbar.jsx` | Top navigation bar showing brand logo, user role badge, AI Assistant link, and Logout button. |
-| **Sidebar** | `src/components/Sidebar.jsx` | Left menu that automatically shows links matching your user role (`Candidate`, `Recruiter`, or `Interviewer`). |
-| **GlassCard** | `src/components/GlassCard.jsx` | Translucent container box with a sleek purple/blue dark glassmorphic finish. |
-| **GlassButton** | `src/components/GlassButton.jsx` | Buttons supporting `primary` (gradient purple), `secondary`, `outline`, and `danger` with built-in loading spinners. |
-| **StatusBadge** | `src/components/StatusBadge.jsx` | Colored pills for statuses: `applied` (blue), `screening` (amber), `shortlisted` (purple), `hired` (green), `rejected` (red). |
-| **MatchScoreBadge** | `src/components/MatchScoreBadge.jsx` | Glowing percentage badge (e.g. `92% Match`) based on AI cosine similarity. |
-| **Modal** | `src/components/Modal.jsx` | Pop-up dialog for reviewing candidates, editing jobs, and scheduling interviews. |
+The frontend is served directly by the FastAPI backend at `http://127.0.0.1:8000/` and located in `app/static/`.
 
----
-
-## 3. 📄 Key Pages Explained (Role by Role)
-
-### 👤 Candidate Workflow:
-- **`CandidateDashboard.jsx`**: Summary card showing application count, interview count, resume upload status, and top recommended job matches.
-- **`CandidateJobsPage.jsx`**: Lists all active jobs with search bar and location filter. Shows AI match score and an **"Apply Now"** button.
-- **`CandidateResumePage.jsx`**: Allows candidate to upload a PDF resume. Calls `/api/v1/resumes/` which extracts text with PyMuPDF and indexes it with pgvector.
-- **`CandidateApplicationsPage.jsx`**: Shows the status timeline of submitted applications (`Applied` ➔ `Screening` ➔ `Shortlisted` ➔ `Hired`).
-- **`CandidateInterviewsPage.jsx`**: Shows scheduled technical interview dates and interviewer names.
-- **`AICareerAssistantPage.jsx`**: Chat interface with ChatGPT-like bubbles, quick suggestion prompts, and source citations. Connects via real-time WebSocket `/ws/chat` with REST fallback.
-
-### 🏢 Recruiter Workflow:
-- **`RecruiterDashboard.jsx`**: Overview stats (Active Jobs, Candidates, Applications, Scheduled Interviews).
-- **`RecruiterJobsPage.jsx`**: Create, edit, and delete job postings for their company.
-- **`RecruiterApplicationsPage.jsx`**: Review applicants, inspect AI match scores & skill breakdowns, update application status, and schedule interviews.
-- **`RecruiterInterviewsPage.jsx`**: Manage scheduled interviews using a dynamic dropdown of company interviewers (`GET /api/v1/interviews/interviewers`).
-- **`RecruiterDocumentsPage.jsx`**: Upload company policies and FAQs, triggering automatic chunking and pgvector indexing.
-- **`RecruiterAIMatchingPage.jsx`**: Select any job to see all candidates ranked by semantic compatibility with strong skills, partial matches, and gaps.
-
-### 🧑‍💻 Interviewer Workflow:
-- **`InterviewerDashboard.jsx`**: Clean view of interviews assigned exclusively to that interviewer with status updater (`Scheduled`, `Completed`, `Cancelled`).
+```
+app/static/
+├── index.html                 # Single page HTML container with Plus Jakarta Sans & design tokens
+├── css/
+│   └── style.css              # Custom Glassmorphism design system, dark palette, animations & responsive grid
+└── js/
+    ├── api.js                 # Fetch API wrapper with auto JWT Authorization header & error handling
+    ├── auth.js                # Auth state manager (token, user, role permissions, login, register, logout)
+    ├── icons.js               # Clean SVG icon definitions (Lucide equivalents)
+    ├── components.js          # Reusable UI components (Navbar, Sidebar, Modals, StatusBadges, MatchScoreBadges, Toasts)
+    ├── router.js              # Hash-based SPA router with role-protected route guards
+    ├── app.js                 # App bootstrap and session initialization
+    └── pages/
+        ├── landing.js         # Public landing page with feature pillars & role cards
+        ├── auth.js            # Login, candidate/recruiter/interviewer register & password recovery
+        ├── candidate.js       # Candidate Dashboard, Jobs Explorer (with AI scores), Resume Manager, Applications Pipeline, Interviews
+        ├── recruiter.js       # Recruiter Dashboard, Job Manager (CRUD), Applications Review & Interview Scheduler, AI Candidate Matcher, Document Vector Store
+        ├── interviewer.js     # Interviewer Dashboard (assigned interviews only, status updater)
+        ├── chat.js            # Real-time WebSocket + REST AI Career Assistant chat interface with session history & source citations
+        └── profile.js         # User profile & candidate competency editor
+```
 
 ---
 
-## 4. 🎤 Viva Cheatsheet (Top 5 Frontend Questions & Answers)
+## 2. 🧩 Core Architecture Layers
 
-**Q1: How does authentication persist across page reloads?**
-> **Answer**: When you log in, the JWT token and user profile are saved in browser `localStorage`. On page load, `AuthContext` reads the token and calls `/api/v1/auth/me` to verify the session.
+1. **SPA Hash Router (`js/router.js`)**:
+   - Manages client-side navigation using URL hashes (`#/`, `#/login`, `#/dashboard`, `#/jobs`, `#/chat`, etc.).
+   - Enforces authentication and user role permissions (e.g., Candidates cannot access `#/recruiter/jobs`).
+   - Automatically renders the top Navbar and dynamic role-specific Sidebar.
 
-**Q2: How are routes protected by user role?**
-> **Answer**: `ProtectedRoute` in `App.jsx` checks `isAuthenticated` and `allowedRoles`. If a candidate tries to access `/recruiter/jobs`, they are automatically redirected.
+2. **API Client (`js/api.js`)**:
+   - Sends requests to FastAPI at `/api/v1`.
+   - Automatically injects `Authorization: Bearer <token>` from `localStorage`.
+   - Handles 401 token expiration and supports both JSON payloads and `multipart/form-data` uploads.
 
-**Q3: How does the frontend communicate with the backend?**
-> **Answer**: `api/client.js` uses Axios. In development, `vite.config.js` proxies `/api` requests to `http://127.0.0.1:8000` to avoid CORS issues.
+3. **Real-Time WebSocket & AI Assistant (`js/pages/chat.js`)**:
+   - Connects to `ws://127.0.0.1:8000/ws/chat?token=<token>` for instant streaming AI career guidance.
+   - Gracefully falls back to REST POST `/api/v1/chat/` if WebSockets are unavailable.
+   - Renders verified company policy document source citations.
 
-**Q4: How does real-time chat work?**
-> **Answer**: `AICareerAssistantPage.jsx` opens a WebSocket connection to `ws://127.0.0.1:8000/ws/chat`. If the WebSocket is unavailable, it gracefully falls back to the REST POST `/api/v1/chat/` endpoint.
+---
 
-**Q5: What is Glassmorphism?**
-> **Answer**: A modern visual UI design style featuring background blur (`backdrop-filter: blur(16px)`), translucent dark panels, subtle glowing borders, and rounded corners for a futuristic aesthetic.
+## 3. 🎤 Viva Cheatsheet (Top Frontend Questions & Answers)
+
+**Q1: How does a Single Page Application (SPA) work in pure HTML/CSS/JS without React Router?**
+> **Answer**: It listens to the browser `hashchange` event. When the hash changes (e.g. `#/jobs`), `router.js` reads the path, checks permissions, and dynamically renders the corresponding view function into the `#app-root` DOM container.
+
+**Q2: How does authentication persist across page refreshes?**
+> **Answer**: Upon login, the JWT access token and user profile are stored in `localStorage`. On page load, `auth.verifySession()` sends a request to `/api/v1/auth/me` to validate the token and refresh user permissions.
+
+**Q3: How is Glassmorphism implemented in CSS?**
+> **Answer**: Using `backdrop-filter: blur(16px)`, translucent background RGBA colors (`rgba(18, 20, 38, 0.72)`), subtle glowing borders (`rgba(139, 92, 246, 0.16)`), and radial background gradient illumination.
+
+**Q4: How does real-time chat communicate with FastAPI?**
+> **Answer**: The browser establishes a standard `new WebSocket('ws://' + location.host + '/ws/chat?token=' + token)`. Messages sent as JSON are processed by the backend RAG pipeline and answers are streamed back in real-time.
+
