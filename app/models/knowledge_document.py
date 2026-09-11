@@ -42,8 +42,9 @@ class KnowledgeDocument(Base):
         index=True
     )
 
-    uploaded_by: Mapped[int] = mapped_column(
+    uploaded_by: Mapped[int | None] = mapped_column(
         ForeignKey("users.id"),
+        nullable=True,
         index=True
     )
 

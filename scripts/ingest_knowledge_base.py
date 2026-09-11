@@ -40,13 +40,15 @@ Recruiting committee meets weekly. Offers are extended within 48 hours of final 
 ]
 
 
+from app.services.company_policy_defaults import seed_standard_policies_for_company
+
+
 def seed_knowledge_base():
     db = SessionLocal()
     try:
         # 1. Create or get Demo Company
         company = db.query(Company).filter(Company.name == "NexusTech Innovations").first()
         if not company:
-            code = generate_company_code()
             company = Company(
                 name="NexusTech Innovations",
                 recruiter_code_hash=hash_company_code("NEXUS-2026-KEY"),
@@ -56,6 +58,15 @@ def seed_knowledge_base():
             db.commit()
             db.refresh(company)
             print(f"Created Demo Company: {company.name} (Recruiter Code: NEXUS-2026-KEY)")
+
+        # Ingest comprehensive standard policies (Maternity leave, Remote work, Benefits, Culture, Hiring FAQ)
+        policy_chunks = seed_standard_policies_for_company(
+            db=db,
+            company=company,
+            uploaded_by=None,
+            overwrite=False,
+        )
+        print(f"[OK] Ingested & indexed {policy_chunks} policy chunks for '{company.name}'")
 
         # 2. Ingest Sample Documents
         for doc_data in SAMPLE_DOCUMENTS:

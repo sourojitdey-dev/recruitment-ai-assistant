@@ -7,6 +7,26 @@ def test_create_company(client):
     data = res.json()
     assert data["name"] == "Cyberdyne Systems"
     assert "recruiter_code" in data
+    assert data["documents_indexed"] > 0
+
+
+def test_create_company_with_custom_policies(client):
+    res = client.post(
+        "/api/v1/companies/",
+        json={
+            "name": "Stark Industries AI",
+            "industry": "Advanced Aerospace & AI",
+            "maternity_leave_policy": "# Stark Industries Maternity Policy\n26 weeks 100% paid leave.",
+            "remote_work_policy": "# Stark Remote Policy\nFull remote flexibility with $2,000 stipend.",
+            "health_benefits": "# Stark Health\n100% medical coverage worldwide.",
+        },
+    )
+    assert res.status_code == 201
+    data = res.json()
+    assert data["name"] == "Stark Industries AI"
+    assert "recruiter_code" in data
+    assert data["documents_indexed"] >= 5
+
 
 
 def test_list_companies(client, test_company):
