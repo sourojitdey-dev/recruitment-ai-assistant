@@ -4,34 +4,78 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RecruitAI — Next-Gen AI Recruitment & Career Intelligence</title>
-  <meta name="description" content="Enterprise AI-powered recruitment, 384-dimensional vector matching, automated resume extraction, and privacy-first RAG career guidance." />
-  
+  <meta name="description" content="Enterprise AI recruitment platform featuring 384-dimensional vector resume matching, intelligent candidate scoring, and privacy-first RAG career guidance." />
+  <meta name="keywords" content="recruitment AI, AI career assistant, resume matching, job matching, candidate scoring, AI resume parser, tech jobs, talent acquisition" />
+  <meta name="author" content="RecruitAI" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="theme-color" content="#0a0b14" />
+  <link rel="canonical" href="https://recruitai.io/" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://recruitai.io/" />
+  <meta property="og:site_name" content="RecruitAI" />
+  <meta property="og:title" content="RecruitAI — Next-Gen AI Recruitment & Career Intelligence" />
+  <meta property="og:description" content="Enterprise AI recruitment platform featuring 384-dimensional vector resume matching, intelligent candidate scoring, and privacy-first RAG career guidance." />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://recruitai.io/" />
+  <meta name="twitter:title" content="RecruitAI — Next-Gen AI Recruitment & Career Intelligence" />
+  <meta name="twitter:description" content="Enterprise AI recruitment platform featuring 384-dimensional vector resume matching, intelligent candidate scoring, and privacy-first RAG career guidance." />
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "RecruitAI",
+    "url": "https://recruitai.io/",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "All",
+    "description": "Enterprise AI recruitment platform featuring 384-dimensional vector resume matching, intelligent candidate scoring, and privacy-first RAG career guidance.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a855f7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z'/%3E%3C/svg%3E" />
 
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- High-Performance Asynchronous Font Preloading -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" />
+  </noscript>
 
-  <!-- Core Design System -->
-  <link rel="stylesheet" href="/static/css/style.css" />
+  <!-- Core Minified Design System -->
+  <link rel="stylesheet" href="/static/css/style.min.css" />
 </head>
 <body>
+  <!-- Accessibility Skip Link -->
+  <a href="#main-content" class="sr-only">Skip to main content</a>
+
   <!-- App Root Shell -->
   <div id="app-root">
     <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #a855f7;">
-      <svg class="animate-spin" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <svg class="animate-spin" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-label="Loading RecruitAI application">
         <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
         <path d="M12 2a10 10 0 0 1 10 10"></path>
       </svg>
     </div>
   </div>
 
-  <!-- Toast Container -->
-  <div id="toast-container" class="toast-container"></div>
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
-  <!-- App Main Self-Contained Bundle -->
-  <script defer src="/static/js/app.bundle.js"></script>
+  <!-- App Main Code-Split ESM Bundle -->
+  <script type="module" src="/static/js/dist/app.js"></script>
 </body>
 </html>

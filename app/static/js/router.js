@@ -1,95 +1,161 @@
 /* ==========================================================================
-   Recruitment AI Assistant - SPA Hash Router & Role Gates
+   Recruitment AI Assistant - SPA Hash Router with Code Splitting
    ========================================================================== */
 
 import { auth } from './auth.js';
 import { renderNavbar, renderSidebar } from './components.js';
 
-// Page Views & Controllers
-import { renderLandingPage } from './pages/landing.js';
-import {
-  renderLoginPage,
-  initLoginPage,
-  renderRegisterCandidatePage,
-  initRegisterCandidatePage,
-  renderRegisterRecruiterPage,
-  initRegisterRecruiterPage,
-  renderRegisterInterviewerPage,
-  initRegisterInterviewerPage,
-  renderForgotPasswordPage,
-  initForgotPasswordPage,
-} from './pages/auth.js';
-
-import {
-  renderCandidateDashboard,
-  initCandidateDashboard,
-  renderCandidateJobsPage,
-  initCandidateJobsPage,
-  renderCandidateResumePage,
-  initCandidateResumePage,
-  renderCandidateApplicationsPage,
-  initCandidateApplicationsPage,
-  renderCandidateInterviewsPage,
-  initCandidateInterviewsPage,
-} from './pages/candidate.js';
-
-import {
-  renderRecruiterDashboard,
-  initRecruiterDashboard,
-  renderRecruiterJobsPage,
-  initRecruiterJobsPage,
-  renderRecruiterApplicationsPage,
-  initRecruiterApplicationsPage,
-  renderRecruiterInterviewsPage,
-  initRecruiterInterviewsPage,
-  renderRecruiterDocumentsPage,
-  initRecruiterDocumentsPage,
-  renderRecruiterAIMatchingPage,
-  initRecruiterAIMatchingPage,
-} from './pages/recruiter.js';
-
-import {
-  renderInterviewerDashboard,
-  initInterviewerDashboard,
-} from './pages/interviewer.js';
-
-import { renderChatPage, initChatPage } from './pages/chat.js';
-import { renderProfilePage, initProfilePage } from './pages/profile.js';
-
+// Route Definitions with Dynamic Chunk Loaders
 const routes = {
   // Public
-  '/': { render: renderLandingPage, public: true },
-  '/login': { render: renderLoginPage, init: initLoginPage, public: true, authOnly: false },
-  '/register': { render: renderRegisterCandidatePage, init: initRegisterCandidatePage, public: true },
-  '/register/candidate': { render: renderRegisterCandidatePage, init: initRegisterCandidatePage, public: true },
-  '/register-recruiter': { render: renderRegisterRecruiterPage, init: initRegisterRecruiterPage, public: true },
-  '/register/recruiter': { render: renderRegisterRecruiterPage, init: initRegisterRecruiterPage, public: true },
-  '/register-interviewer': { render: renderRegisterInterviewerPage, init: initRegisterInterviewerPage, public: true },
-  '/register/interviewer': { render: renderRegisterInterviewerPage, init: initRegisterInterviewerPage, public: true },
-  '/forgot-password': { render: renderForgotPasswordPage, init: initForgotPasswordPage, public: true },
-  '/jobs': { render: renderCandidateJobsPage, init: initCandidateJobsPage, public: true },
+  '/': {
+    load: () => import('./pages/landing.js'),
+    renderName: 'renderLandingPage',
+    public: true,
+  },
+  '/login': {
+    load: () => import('./pages/auth.js'),
+    renderName: 'renderLoginPage',
+    initName: 'initLoginPage',
+    public: true,
+  },
+  '/register': {
+    load: () => import('./pages/auth.js'),
+    renderName: 'renderRegisterCandidatePage',
+    initName: 'initRegisterCandidatePage',
+    public: true,
+  },
+  '/register/candidate': {
+    load: () => import('./pages/auth.js'),
+    renderName: 'renderRegisterCandidatePage',
+    initName: 'initRegisterCandidatePage',
+    public: true,
+  },
+  '/register-recruiter': {
+    load: () => import('./pages/auth.js'),
+    renderName: 'renderRegisterRecruiterPage',
+    initName: 'initRegisterRecruiterPage',
+    public: true,
+  },
+  '/register/recruiter': {
+    load: () => import('./pages/auth.js'),
+    renderName: 'renderRegisterRecruiterPage',
+    initName: 'initRegisterRecruiterPage',
+    public: true,
+  },
+  '/register-interviewer': {
+    load: () => import('./pages/auth.js'),
+    renderName: 'renderRegisterInterviewerPage',
+    initName: 'initRegisterInterviewerPage',
+    public: true,
+  },
+  '/register/interviewer': {
+    load: () => import('./pages/auth.js'),
+    renderName: 'renderRegisterInterviewerPage',
+    initName: 'initRegisterInterviewerPage',
+    public: true,
+  },
+  '/register-company': {
+    load: () => import('./pages/auth.js'),
+    renderName: 'renderRegisterCompanyPage',
+    initName: 'initRegisterCompanyPage',
+    public: true,
+  },
+  '/register/company': {
+    load: () => import('./pages/auth.js'),
+    renderName: 'renderRegisterCompanyPage',
+    initName: 'initRegisterCompanyPage',
+    public: true,
+  },
+  '/forgot-password': {
+    load: () => import('./pages/auth.js'),
+    renderName: 'renderForgotPasswordPage',
+    initName: 'initForgotPasswordPage',
+    public: true,
+  },
+  '/jobs': {
+    load: () => import('./pages/candidate.js'),
+    renderName: 'renderCandidateJobsPage',
+    initName: 'initCandidateJobsPage',
+    public: true,
+  },
 
   // Common Authenticated
   '/dashboard': { dynamic: true },
   '/recruiter': { dynamic: true },
   '/interviewer': { dynamic: true },
-  '/chat': { render: renderChatPage, init: initChatPage, roles: ['candidate', 'recruiter', 'admin', 'interviewer'] },
-  '/profile': { render: renderProfilePage, init: initProfilePage, roles: ['candidate', 'recruiter', 'admin', 'interviewer'] },
+  '/chat': {
+    load: () => import('./pages/chat.js'),
+    renderName: 'renderChatPage',
+    initName: 'initChatPage',
+    roles: ['candidate', 'recruiter', 'admin', 'interviewer'],
+  },
+  '/profile': {
+    load: () => import('./pages/profile.js'),
+    renderName: 'renderProfilePage',
+    initName: 'initProfilePage',
+    roles: ['candidate', 'recruiter', 'admin', 'interviewer'],
+  },
 
   // Candidate
-  '/resume': { render: renderCandidateResumePage, init: initCandidateResumePage, roles: ['candidate'] },
-  '/applications': { render: renderCandidateApplicationsPage, init: initCandidateApplicationsPage, roles: ['candidate'] },
-  '/interviews': { render: renderCandidateInterviewsPage, init: initCandidateInterviewsPage, roles: ['candidate'] },
+  '/resume': {
+    load: () => import('./pages/candidate.js'),
+    renderName: 'renderCandidateResumePage',
+    initName: 'initCandidateResumePage',
+    roles: ['candidate'],
+  },
+  '/applications': {
+    load: () => import('./pages/candidate.js'),
+    renderName: 'renderCandidateApplicationsPage',
+    initName: 'initCandidateApplicationsPage',
+    roles: ['candidate'],
+  },
+  '/interviews': {
+    load: () => import('./pages/candidate.js'),
+    renderName: 'renderCandidateInterviewsPage',
+    initName: 'initCandidateInterviewsPage',
+    roles: ['candidate'],
+  },
 
   // Recruiter
-  '/recruiter/jobs': { render: renderRecruiterJobsPage, init: initRecruiterJobsPage, roles: ['recruiter', 'admin'] },
-  '/recruiter/applications': { render: renderRecruiterApplicationsPage, init: initRecruiterApplicationsPage, roles: ['recruiter', 'admin'] },
-  '/recruiter/interviews': { render: renderRecruiterInterviewsPage, init: initRecruiterInterviewsPage, roles: ['recruiter', 'admin'] },
-  '/recruiter/matching': { render: renderRecruiterAIMatchingPage, init: initRecruiterAIMatchingPage, roles: ['recruiter', 'admin'] },
-  '/recruiter/documents': { render: renderRecruiterDocumentsPage, init: initRecruiterDocumentsPage, roles: ['recruiter', 'admin'] },
+  '/recruiter/jobs': {
+    load: () => import('./pages/recruiter.js'),
+    renderName: 'renderRecruiterJobsPage',
+    initName: 'initRecruiterJobsPage',
+    roles: ['recruiter', 'admin'],
+  },
+  '/recruiter/applications': {
+    load: () => import('./pages/recruiter.js'),
+    renderName: 'renderRecruiterApplicationsPage',
+    initName: 'initRecruiterApplicationsPage',
+    roles: ['recruiter', 'admin'],
+  },
+  '/recruiter/interviews': {
+    load: () => import('./pages/recruiter.js'),
+    renderName: 'renderRecruiterInterviewsPage',
+    initName: 'initRecruiterInterviewsPage',
+    roles: ['recruiter', 'admin'],
+  },
+  '/recruiter/matching': {
+    load: () => import('./pages/recruiter.js'),
+    renderName: 'renderRecruiterAIMatchingPage',
+    initName: 'initRecruiterAIMatchingPage',
+    roles: ['recruiter', 'admin'],
+  },
+  '/recruiter/documents': {
+    load: () => import('./pages/recruiter.js'),
+    renderName: 'renderRecruiterDocumentsPage',
+    initName: 'initRecruiterDocumentsPage',
+    roles: ['recruiter', 'admin'],
+  },
 
   // Interviewer
-  '/interviewer/interviews': { render: renderInterviewerDashboard, init: initInterviewerDashboard, roles: ['interviewer'] },
+  '/interviewer/interviews': {
+    load: () => import('./pages/interviewer.js'),
+    renderName: 'renderInterviewerDashboard',
+    initName: 'initInterviewerDashboard',
+    roles: ['interviewer'],
+  },
 };
 
 export class Router {
@@ -114,7 +180,7 @@ export class Router {
     this.handleRoute();
   }
 
-  handleRoute() {
+  async handleRoute() {
     try {
       if (!this.appRoot) {
         this.appRoot = document.querySelector(this.appRootSelector) || document.getElementById('app-root');
@@ -136,11 +202,14 @@ export class Router {
           return;
         }
         if (userRole === 'interviewer') {
-          this.renderView({ render: renderInterviewerDashboard, init: initInterviewerDashboard }, path);
+          const mod = await import('./pages/interviewer.js');
+          await this.renderModuleView(mod.renderInterviewerDashboard, mod.initInterviewerDashboard, path);
         } else if (userRole === 'recruiter' || userRole === 'admin') {
-          this.renderView({ render: renderRecruiterDashboard, init: initRecruiterDashboard }, path);
+          const mod = await import('./pages/recruiter.js');
+          await this.renderModuleView(mod.renderRecruiterDashboard, mod.initRecruiterDashboard, path);
         } else {
-          this.renderView({ render: renderCandidateDashboard, init: initCandidateDashboard }, path);
+          const mod = await import('./pages/candidate.js');
+          await this.renderModuleView(mod.renderCandidateDashboard, mod.initCandidateDashboard, path);
         }
         return;
       }
@@ -165,13 +234,21 @@ export class Router {
         return;
       }
 
-      this.renderView(route, path);
+      // Load view module dynamically
+      if (typeof route.load === 'function') {
+        const mod = await route.load();
+        const renderFn = mod[route.renderName];
+        const initFn = route.initName ? mod[route.initName] : null;
+        await this.renderModuleView(renderFn, initFn, path);
+      } else if (typeof route.render === 'function') {
+        await this.renderModuleView(route.render, route.init, path);
+      }
     } catch (routeErr) {
       console.error('Routing resolution error:', routeErr);
     }
   }
 
-  renderView(route, path) {
+  async renderModuleView(renderFn, initFn, path) {
     try {
       if (!this.appRoot) {
         this.appRoot = document.querySelector(this.appRootSelector) || document.getElementById('app-root');
@@ -190,11 +267,11 @@ export class Router {
 
       const navbarHtml = renderNavbar();
       const sidebarHtml = showSidebar ? renderSidebar() : '';
-      const mainHtml = typeof route.render === 'function' ? route.render() : '';
+      const mainHtml = typeof renderFn === 'function' ? renderFn() : '';
 
       this.appRoot.innerHTML = `
         ${navbarHtml}
-        <main class="app-container">
+        <main class="app-container" id="main-content">
           ${
             showSidebar
               ? `
@@ -217,15 +294,15 @@ export class Router {
       });
 
       // Run controller init hook safely
-      if (typeof route.init === 'function') {
+      if (typeof initFn === 'function') {
         try {
-          route.init();
+          initFn();
         } catch (err) {
           console.error('Error during route init:', err);
         }
       }
     } catch (renderErr) {
-      console.error('Fatal renderView error:', renderErr);
+      console.error('Fatal renderModuleView error:', renderErr);
       if (this.appRoot) {
         this.appRoot.innerHTML = `
           <div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem;">

@@ -164,6 +164,7 @@ export function renderNavbar() {
             `
               : `
               <a href="#/login" class="glass-btn glass-btn-outline glass-btn-sm">Sign In</a>
+              <a href="#/register/company" class="glass-btn glass-btn-outline glass-btn-sm hidden-mobile" style="border-color: rgba(52, 211, 153, 0.3); color: #34d399;">🏢 Register Company</a>
               <a href="#/register" class="glass-btn glass-btn-primary glass-btn-sm">Get Started</a>
             `
           }

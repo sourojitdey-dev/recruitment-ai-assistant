@@ -99,6 +99,14 @@ class AuthManager {
     return await api.post('/auth/register/interviewer', data);
   }
 
+  async registerCompany(data) {
+    return await api.post('/companies/', data);
+  }
+
+  async getCompanies() {
+    return await api.get('/companies/');
+  }
+
   async forgotPassword(data) {
     return await api.post('/auth/forgot-password', data);
   }

@@ -1,7 +1,8 @@
 from pathlib import Path
 from fastapi import FastAPI, Query, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from app.api.v1.endpoints.applications import router as applications_router
@@ -24,6 +25,9 @@ app = FastAPI(
     description="Enterprise AI Recruitment, Resume Matching, and Career Guidance API",
 )
 
+# GZip Compression Middleware (compresses responses > 500 bytes by ~75-80%)
+app.add_middleware(GZipMiddleware, minimum_size=500)
+
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
@@ -35,12 +39,15 @@ app.add_middleware(
 
 
 @app.middleware("http")
-async def add_no_cache_headers(request, call_next):
+async def optimize_cache_headers(request, call_next):
     response = await call_next(request)
-    if request.url.path.startswith("/static") or request.url.path in ("/", "/chat"):
-        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
-        response.headers["Pragma"] = "no-cache"
-        response.headers["Expires"] = "0"
+    path = request.url.path
+    if path.startswith("/static"):
+        # Cache static JS/CSS/images for 1 day with stale-while-revalidate
+        response.headers["Cache-Control"] = "public, max-age=86400, stale-while-revalidate=604800"
+    elif path in ("/", "/chat"):
+        # Allow instant revalidation for HTML entrypoints
+        response.headers["Cache-Control"] = "no-cache, must-revalidate"
     return response
 
 
@@ -70,6 +77,39 @@ async def websocket_chat_endpoint(
     token: str | None = Query(None),
 ):
     await handle_chat_websocket(websocket, token)
+
+
+@app.get("/robots.txt", response_class=PlainTextResponse)
+def get_robots_txt():
+    return "User-agent: *\nAllow: /\nSitemap: https://recruitai.io/sitemap.xml\n"
+
+
+@app.get("/sitemap.xml")
+def get_sitemap():
+    content = """<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://recruitai.io/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://recruitai.io/#/jobs</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://recruitai.io/#/login</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://recruitai.io/#/register</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>"""
+    return Response(content=content, media_type="application/xml")
 
 
 @app.get("/chat", response_class=HTMLResponse)
@@ -102,4 +142,4 @@ def health_check():
         "status": "healthy",
         "service": "recruitment-ai-assistant",
         "version": "1.0.0",
-    }
+    }
