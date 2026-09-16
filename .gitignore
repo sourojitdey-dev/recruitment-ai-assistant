@@ -32,3 +32,4 @@ frontend/.vite/
 Thumbs.db
 .vscode/
 .idea/
+demo_videos/*.mp4
